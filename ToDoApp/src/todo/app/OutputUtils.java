@@ -139,40 +139,6 @@ public class OutputUtils {
         System.out.println("╰────────────────────────╯"+ANSI_RESET);
     }
 
-    /**
-     * This method purpose is to act as a user guide
-     * on how adding a task should be used for the user.
-     * <p>
-     * to ease usage and minimize crashes
-     */
-    public void printInstructionsTask(String instructionType) {
-        System.out.print(ANSI_PURPLE);
-        switch (instructionType){
-            case "add" ->{
-                System.out.println("\nTo add a new task, please follow the instructions and press ENTER:");
-                System.out.println("ID,  Title,Due Date (format: dd-mm-yyyy),Status,Project Name\n");
-                System.out.println("Example of a task to add (pay attention to white space):\n" +
-                        "15, finish programm,26-10-2021,in-progress,School");
-            }
-            case "update"->{
-                System.out.println("\nTo update a task, follow the instructions and press ENTER: ");
-                System.out.println("Task ID,Title,Due Date (format: dd-mm-yyyy),Status,Project Name");
-                System.out.println("ID here represent the ID of the task where an update will occur");
-                System.out.println("insert a (-) when an update is not needed to that specific \n");
-            }
-            case "mark as done"->System.out.println("\nTo mark a task as done, enter ID and press ENTER \n");
-
-            case "save/read file"->{
-                System.out.println("\nPlease enter path to read");
-                System.out.println("Example of a file path to read/saving from to /XXXX/XXXX/XXXX/file.txt");
-                System.out.println("After reading/saving press 5 to display the tasks that were read from the file.");
-            }
-            case "remove"->System.out.println("\nTo remove a task, enter ID and press ENTER");
-
-        }
-        System.out.println("\nEnter 0 to RETURN"+ANSI_RESET);
-
-    }
 
     /**
      * This method display all existing tasks and how the method is executed and will later be used

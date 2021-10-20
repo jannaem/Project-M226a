@@ -15,7 +15,11 @@ import java.util.stream.Collectors;
  */
 
 public class FileHandler {
-    ToDoList toDoList = new ToDoList();
+    private ToDoList toDoList;
+
+    public FileHandler(ToDoList toDoList) {
+        this.toDoList = toDoList;
+    }
 
     /**
      * This method gets a defined path which is taken from the user.
@@ -66,12 +70,11 @@ public class FileHandler {
         try {
             FileWriter fw = new FileWriter(path);
             List<String> lines = toDoList.getTasks().entrySet().stream()
-                    .map(entry -> entry.getValue().toString())
+                    .map(entry -> entry.getValue().toString(toDoList))
                     .collect(Collectors.toList());
 
             bw = new BufferedWriter(fw);
             for (String line : lines) {
-                System.out.println(line);
                 bw.write(line);
             }
             bw.close();

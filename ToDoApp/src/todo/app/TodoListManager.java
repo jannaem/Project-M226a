@@ -1,7 +1,7 @@
 package todo.app;
 
 /**
- * ToDolISTManager is the main entity where all classes and
+ * ToDolISTManager is the main class where all classes and
  * features are connected and implemented.
  *
  * @author Janna Esteban
@@ -26,8 +26,12 @@ public class TodoListManager {
     public static boolean applicationRunning = true;
     private ToDoList toDoList = new ToDoList();
     private OutputUtils output = new OutputUtils();
-    private FileHandler fileHandler = new FileHandler();
-    private IO input = new IO();
+    private FileHandler fileHandler = new FileHandler(toDoList);
+    private IO io = new IO();
+    private boolean repeat = true;
+    private int id;
+    private String path;
+    private String task;
 
 
     /**
@@ -40,120 +44,65 @@ public class TodoListManager {
         output.printMsg("title");
         while (applicationRunning) {
             output.printAvailableActions();
-            int actionNumber = input.readInputAction();
-            executeAction(actionNumber);
+            int actionNumber = io.readInputAction();
+            processTask(actionNumber);
 
         }
     }
 
     /**
-     * This method runs a switch statement in where it instantiate objects
-     * made of classes that I created as features of the application
-     * for it to be used to in the start() method
+     * This method runs a switch statement which
+     * uses user inputs to process different tasks
+     * in different ways
      *
      * @param actionNumber the action that the user will insert
      */
 
-    public void executeAction(int actionNumber) {
-        int id;
-        String path;
-        String task;
-        boolean repeat = true;
+    public void processTask(int actionNumber) {
 
         if (actionNumber > 1 && actionNumber < 9 && toDoList.isToDoListEmpty())
             output.printMsg("add task");
-
         else {
             switch (actionNumber) {
-                case ADD_TASK:
-                    output.printInstructionsTask("add");
-                    task = executeAdd();
-
+                case ADD_TASK ->{
+                    io.printInstructionsTask("add");
+                    task = executeAddTask();
                     toDoList.addTask(task);
-                    break;
-                case MARK_AS_DONE:
-                    while (repeat) {
-                        output.printInstructionsTask("mark as done");
-                        id = input.readTaskId();
-                        if (id != 0) {
-                            if (toDoList.checkId(id)) {
-                                repeat = false;
-                                toDoList.markTaskAsDone(id);
-                                output.printTaskStatus("done");
-                            } else {
-                                output.printErrorMsg("id dont exist");
-                            }
-                        }
-                    }
-                    break;
-                case REMOVE_TASK:
-                    while (repeat) {
-                        output.printInstructionsTask("remove");
-                        id = input.readTaskId();
-                        if (id != 0) {
-                            if (toDoList.checkId(id)) {
-                                toDoList.deleteTask(id);
-                                output.printTaskStatus("removed", String.valueOf(id));
-                                repeat = false;
-                            }
-                        }
-                    }
-                    break;
-                case EDIT_TASK:
-                    output.printInstructionsTask("update");
-                    task = executeEdit();
-                    if (!task.equals("0")) {
-                        toDoList.editTask(task);
-                        output.printTaskStatus("task", "updated");
-                    }
-
-                    break;
-                case DISPLAY_ALL_TASKS:
+                }
+                case MARK_AS_DONE -> executeMarkTaskAsDone();
+                case REMOVE_TASK -> executeRemoveTask();
+                case EDIT_TASK -> executeEditTask();
+                case DISPLAY_ALL_TASKS ->{
                     output.printMsg("all tasks");
                     output.printTasks(toDoList);
-                    break;
-                case SORT_TASKS_BY_DATE:
+                }
+                case SORT_TASKS_BY_DATE ->{
                     toDoList.sortByDateTasks();
                     output.printMsg("all tasks");
                     output.printTasks(toDoList);
-                    break;
-                case SORT_TASKS_PROJECT:
+                }
+                case SORT_TASKS_PROJECT ->{
                     toDoList.sortByProjectTasks();
                     output.printTasks(toDoList);
                     output.printMsg("all tasks");
-                    break;
-                case SAVE_TASKS_TO_FILE:
-                    while (repeat) {
-                        output.printInstructionsTask("save/read file");
-                        path = input.readPathInput();
-                        if (!path.equals("0")) {
-                            if (fileHandler.saveToFile(path)) {
-                                repeat = false;
-                                output.printTaskStatus("task saved");
-                            } else {
-                                output.printErrorMsg("path/file not found");
-                            }
-                        }
-                    }
-                    break;
-                case READ_FROM_FILE:
-                    output.printInstructionsTask("save/read file");
-                    path = input.readPathInput();
-                    if (!path.equals("0"))
-                        fileHandler.readFile(path);
-                    break;
-                case EXIT:
+                }
+                case SAVE_TASKS_TO_FILE -> saveTaskToFile();
+                case READ_FROM_FILE -> readTaskFromFile();
+                case EXIT ->{
                     output.printGoodBye();
                     applicationRunning = false;
-                    break;
-
+                }
             }
         }
     }
 
-    private String executeAdd() {
+    /**
+     *
+     * @return
+     */
+    private String executeAddTask() {
         while (true) {
-            String userInput = input.readInputTask();
+            String userInput = io.readInputTask();
             if (!userInput.equals("0")) {
                 String[] parts = userInput.split(",");
                 if (parts.length == 5) {
@@ -175,9 +124,41 @@ public class TodoListManager {
         }
     }
 
-    private String executeEdit() {
+    /**
+     *
+     */
+    private void executeRemoveTask(){
+        while (repeat) {
+            io.printInstructionsTask("remove");
+            id = io.readTaskId();
+            if (id != 0) {
+                if (toDoList.checkId(id)) {
+                    toDoList.deleteTask(id);
+                    output.printTaskStatus("removed", String.valueOf(id));
+                    repeat = false;
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void executeEditTask(){
+        io.printInstructionsTask("update");
+        task = checkEdit();
+        if (!task.equals("0")) {
+            toDoList.editTask(task);
+            output.printTaskStatus("task", "updated");
+        }
+    }
+
+    /**
+     *
+     */
+    private String checkEdit() {
         while (true) {
-            String userInput = input.readInputTask();
+            String userInput = io.readInputTask();
             if (!userInput.equals(0)) {
                 String[] parts = userInput.split(",");
                 if (parts.length == 5) {
@@ -202,6 +183,61 @@ public class TodoListManager {
                     }
                 } else {
                     return userInput;
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void executeMarkTaskAsDone() {
+        while (repeat) {
+            io.printInstructionsTask("mark as done");
+            id = io.readTaskId();
+            if (id != 0) {
+                if (toDoList.checkId(id)) {
+                    repeat = false;
+                    toDoList.markTaskAsDone(id);
+                    output.printTaskStatus("done");
+                } else {
+                    output.printErrorMsg("id dont exist");
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void saveTaskToFile() {
+        while (repeat) {
+            io.printInstructionsTask("save/read file");
+            path = io.readPathInput();
+            if (!path.equals("0")) {
+                if (fileHandler.saveToFile(path)) {
+                    repeat = false;
+                    output.printTaskStatus("task saved", path);
+                } else {
+                    output.printErrorMsg("path/file not found");
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void readTaskFromFile() {
+        while (repeat) {
+            io.printInstructionsTask("save/read file");
+            path = io.readPathInput();
+            if (!path.equals("0")) {
+                if (fileHandler.readFile(path)) {
+                    repeat = false;
+                    output.printTaskStatus("reading files");
+                } else {
+                    output.printErrorMsg("path/file not found");
                 }
             }
         }
