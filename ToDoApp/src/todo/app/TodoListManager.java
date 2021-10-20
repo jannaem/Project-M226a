@@ -4,7 +4,7 @@ package todo.app;
  * ToDolISTManager is the main entity where all classes and
  * features are connected and implemented.
  *
- * @author Janna Esteban & Remo Aeberli
+ * @author Janna Esteban
  */
 public class TodoListManager {
     private static final int ADD_TASK = 1;
@@ -55,40 +55,29 @@ public class TodoListManager {
         String task;
 
         if (actionNumber > 1 && actionNumber < 9 && toDoList.isToDoListEmpty())
-            //TODO output message
+            //todo: output message
 
         else {
             switch (actionNumber) {
                 case ADD_TASK:
-
                     break;
                 case MARK_AS_DONE:
-
-
                     break;
                 case REMOVE_TASK:
-
                     break;
                 case EDIT_TASK:
-
                     break;
                 case DISPLAY_ALL_TASKS:
-
                     break;
                 case SORT_TASKS_BY_DATE:
-
                     break;
                 case SORT_TASKS_PROJECT:
-
                     break;
                 case SAVE_TASKS_TO_FILE:
-
                     break;
                 case READ_FROM_FILE:
-
                     break;
                 case EXIT:
-
                     break;
 
             }

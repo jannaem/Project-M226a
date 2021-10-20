@@ -4,11 +4,11 @@ import java.time.LocalDate;
 /**
  * This class facilitates the structure of the tasks to be added,
  * help connect classes and implement features.
- * @author Janna Esteban & Remo Aeberli
+ * @author Janna Esteban
  */
 public class Task {
 
-    private String id;
+    private int id;
     private String title;
     private LocalDate dueDate;
     private String status;
@@ -18,7 +18,7 @@ public class Task {
      * @return task's ID
      */
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -55,7 +55,7 @@ public class Task {
     /**
      * @param id Task's ID to set
      */
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

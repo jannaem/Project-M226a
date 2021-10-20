@@ -1,9 +1,13 @@
 package todo.app;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Map;
-import java.util.Scanner;
+/**
+ * This class holds methods to save the tasks
+ * inserted by the user to a local existing
+ * file and to read the tasks from a
+ * existing file.
+ *
+ * @author Janna Esteban Mena
+ */
 
 public class FileHandler {
 
@@ -18,10 +22,15 @@ public class FileHandler {
     public void readFiles(String path, ToDoList toDoList) {
     }
 
-
-    public void readTaskFromFile(String path) {
-    }
-
-    public void saveTaskToFile(String path) {
+    /**
+     * In this method reside the implementation of
+     * how a given path is taken from the user
+     * logged into to save information of tasks inserted by the user
+     * <p>
+     * it used a PrintWriter and print out a message to confirm success or failure
+     *
+     * @param path path to the local files for tasks to be saved in
+     */
+    public void saveToFile(String path) {
     }
 }
