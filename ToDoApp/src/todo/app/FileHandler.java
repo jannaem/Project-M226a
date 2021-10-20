@@ -1,5 +1,13 @@
 package todo.app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
 /**
  * This class holds methods to save the tasks
  * inserted by the user to a local existing
@@ -10,16 +18,38 @@ package todo.app;
  */
 
 public class FileHandler {
+    ToDoList toDoList = new ToDoList();
 
     /**
      * This method gets a defined path which is taken from the user.
      * It adds the tasks from the file and saves it in todolist with
      * the before defined tasks.
      * @param path path of the local file to be read by the program
-     * @param toDoList so that you can get add all readed task to the
-     *                 to-do list
+     * @return true if file was succesfully readed
      */
-    public void readFiles(String path, ToDoList toDoList) {
+    public boolean readFiles(String path) {
+        boolean isReaded;
+        try {
+            Scanner scanner = new Scanner(new File(path));
+            while (scanner.hasNextLine()) {
+                String file = scanner.nextLine();
+                String[] parts = file.split(",");
+                Task task = Task.buildTask(parts[0], parts[1], toDoList.parseDate("dd-MM-yyyy", parts[2]),
+                        parts[3], parts[4]);
+                if (toDoList.getTasks().get(Integer.valueOf(parts[0])) != null) {
+                    toDoList.getTasks().replace(Integer.valueOf(parts[0]), task);
+                } else {
+                    toDoList.getTasks().put(Integer.valueOf(parts[0]), task);
+                }
+
+            }
+            scanner.close();
+            isReaded = true;
+        } catch (FileNotFoundException e) {
+           isReaded = false;
+        }
+        return isReaded;
+        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
@@ -30,7 +60,24 @@ public class FileHandler {
      * it used a PrintWriter and print out a message to confirm success or failure
      *
      * @param path path to the local files for tasks to be saved in
+     * @return true when all task could be saved
      */
-    public void saveToFile(String path) {
+    public boolean saveToFile(String path) {
+        boolean isSaved;
+        try {
+            PrintWriter pw = new PrintWriter(new FileOutputStream(path));
+
+            List<String> lines = toDoList.getTasks().entrySet().stream().map(entry -> entry.getValue().toString()).collect(Collectors.toList());
+
+            lines.forEach((line) -> {
+                pw.println(line);
+            });
+            pw.close();
+            isSaved = true;
+        } catch (FileNotFoundException e) {
+            isSaved = false;
+        }
+        return isSaved;
+        //TODO output for the user, so ta the he knows it worked
     }
 }

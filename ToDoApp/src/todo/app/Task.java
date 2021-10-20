@@ -102,7 +102,7 @@ public class Task {
     public static Task buildTask(String id, String title, LocalDate dueDate, String status, String projectName) {
         Task task = new Task();
 
-        task.setId(id);
+        task.setId(Integer.parseInt(id));
         task.setTitle(title);
         task.setDueDate(dueDate);
         task.setStatus(status);
