@@ -2,6 +2,7 @@ package todo.app;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 /**
@@ -50,24 +51,27 @@ public class ToDoList {
 
     public boolean editTask(String rawTask) {
         String[] parts = rawTask.split(",");
+        int id = Integer.parseInt(parts[0]);
 
         boolean isTaskEdited = false;
         if (!parts[1].equals("-")) {
-            tasks.get(parts[0]).setTitle(parts[1]);
+            tasks.get(id).setTitle(parts[1]);
             isTaskEdited = true;
         }
 
         if (!parts[2].equals("-")) {
-            tasks.get(parts[0]).setDueDate(parseDate("dd-mm-yyyy", parts[2]));
+            LocalDate date = parseDate("dd-MM-yyyy", parts[2]);
+            if(date != null)
+            tasks.get(id).setDueDate(date);
             isTaskEdited = true;
         }
 
         if (!parts[3].equals("-")) {
-            tasks.get(parts[0]).setStatus(parts[3]);
+            tasks.get(id).setStatus(parts[3]);
             isTaskEdited = true;
         }
         if (!parts[4].equals("-")) {
-            tasks.get(parts[0]).setProjectName(parts[4]);
+            tasks.get(id).setProjectName(parts[4]);
             isTaskEdited = true;
         }
         return isTaskEdited;
@@ -100,7 +104,6 @@ public class ToDoList {
 
     public void deleteTask(int id) {
         tasks.remove(id);
-        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
@@ -147,17 +150,18 @@ public class ToDoList {
      * by creating Local Date and parsing it then formatting it
      * to the pattern inserted in the method parameter
      *
-     * @param format correct format of the date
      * @param value  value that equals the component in the task format
      * @return result result as a boolean expression
      */
-    public boolean isDateValid(String format, String value) {
-        DateTimeFormatter formattings = DateTimeFormatter.ofPattern(format);
-        LocalDate localDate = LocalDate.parse(value, formattings);
-
-        String result = localDate.format(formattings);
-
-        return result.equals(value);
+    public boolean isDateValid(String value) {
+        DateTimeFormatter formattings = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        try{
+            LocalDate localDate = LocalDate.parse(value, formattings);
+            localDate.format(formattings);
+            return true;
+        }catch (DateTimeParseException e){
+            return false;
+        }
     }
 
     /**
@@ -184,8 +188,12 @@ public class ToDoList {
      */
     public LocalDate parseDate(String format, String value) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        LocalDate localDate = LocalDate.parse(value, formatter);
-        return localDate;
+        try {
+            LocalDate localDate = LocalDate.parse(value, formatter);
+            return localDate;
+        }catch(DateTimeParseException e){
+            return null;
+        }
     }
 
     /**

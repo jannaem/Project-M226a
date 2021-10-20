@@ -29,6 +29,7 @@ public class TodoListManager {
     private FileHandler fileHandler = new FileHandler();
     private IO input = new IO();
 
+
     /**
      * This method start the application by running an infinite loop
      * to make sure the app keeps running as long as we are using it
@@ -36,7 +37,11 @@ public class TodoListManager {
      */
 
     public void start() {
+        output.printMsg("title");
         while (applicationRunning) {
+            output.printAvailableActions();
+            int actionNumber = input.readInputAction();
+            executeAction(actionNumber);
 
         }
     }
@@ -50,38 +55,155 @@ public class TodoListManager {
      */
 
     public void executeAction(int actionNumber) {
-        String id;
+        int id;
         String path;
         String task;
+        boolean repeat = true;
 
         if (actionNumber > 1 && actionNumber < 9 && toDoList.isToDoListEmpty())
-            //todo: output message
+            output.printMsg("add task");
 
         else {
             switch (actionNumber) {
                 case ADD_TASK:
+                    output.printInstructionsTask("add");
+                    task = executeAdd();
+
+                    toDoList.addTask(task);
                     break;
                 case MARK_AS_DONE:
+                    while (repeat) {
+                        output.printInstructionsTask("mark as done");
+                        id = input.readTaskId();
+                        if (id != 0) {
+                            if (toDoList.checkId(id)) {
+                                repeat = false;
+                                toDoList.markTaskAsDone(id);
+                                output.printTaskStatus("done");
+                            } else {
+                                output.printErrorMsg("id dont exist");
+                            }
+                        }
+                    }
                     break;
                 case REMOVE_TASK:
+                    while (repeat) {
+                        output.printInstructionsTask("remove");
+                        id = input.readTaskId();
+                        if (id != 0) {
+                            if (toDoList.checkId(id)) {
+                                toDoList.deleteTask(id);
+                                output.printTaskStatus("removed", String.valueOf(id));
+                                repeat = false;
+                            }
+                        }
+                    }
                     break;
                 case EDIT_TASK:
+                    output.printInstructionsTask("update");
+                    task = executeEdit();
+                    if (!task.equals("0")) {
+                        toDoList.editTask(task);
+                        output.printTaskStatus("task", "updated");
+                    }
+
                     break;
                 case DISPLAY_ALL_TASKS:
+                    output.printMsg("all tasks");
+                    output.printTasks(toDoList);
                     break;
                 case SORT_TASKS_BY_DATE:
+                    toDoList.sortByDateTasks();
+                    output.printMsg("all tasks");
+                    output.printTasks(toDoList);
                     break;
                 case SORT_TASKS_PROJECT:
+                    toDoList.sortByProjectTasks();
+                    output.printTasks(toDoList);
+                    output.printMsg("all tasks");
                     break;
                 case SAVE_TASKS_TO_FILE:
+                    while (repeat) {
+                        output.printInstructionsTask("save/read file");
+                        path = input.readPathInput();
+                        if (!path.equals("0")) {
+                            if (fileHandler.saveToFile(path)) {
+                                repeat = false;
+                                output.printTaskStatus("task saved");
+                            } else {
+                                output.printErrorMsg("path/file not found");
+                            }
+                        }
+                    }
                     break;
                 case READ_FROM_FILE:
+                    output.printInstructionsTask("save/read file");
+                    path = input.readPathInput();
+                    if (!path.equals("0"))
+                        fileHandler.readFile(path);
                     break;
                 case EXIT:
+                    output.printGoodBye();
+                    applicationRunning = false;
                     break;
 
             }
         }
     }
 
+    private String executeAdd() {
+        while (true) {
+            String userInput = input.readInputTask();
+            if (!userInput.equals("0")) {
+                String[] parts = userInput.split(",");
+                if (parts.length == 5) {
+                    if (toDoList.isDateValid(parts[2])) {
+                        if (toDoList.getTasks().get(Integer.parseInt(parts[0])) == null) {
+                            return userInput;
+                        } else {
+                            output.printErrorMsg("id exist");
+                        }
+                    } else {
+                        output.printErrorMsg("invalid date");
+                    }
+                } else {
+                    output.printErrorMsg("follow instruction");
+                }
+            } else {
+                return userInput;
+            }
+        }
+    }
+
+    private String executeEdit() {
+        while (true) {
+            String userInput = input.readInputTask();
+            if (!userInput.equals(0)) {
+                String[] parts = userInput.split(",");
+                if (parts.length == 5) {
+                    boolean dateValidationRequired = true;
+                    if (parts[2].equals("-")) {
+                        dateValidationRequired = false;
+                    }
+
+                    boolean isDateValid = true;
+                    if (dateValidationRequired) {
+                        isDateValid = toDoList.isDateValid(parts[2]);
+                    }
+
+                    if (isDateValid) {
+                        if (toDoList.getTasks().get(Integer.parseInt(parts[0])) != null) {
+                            return userInput;
+                        } else {
+                            output.printErrorMsg("id dont exist");
+                        }
+                    } else {
+                        output.printErrorMsg("follow instruction / return");
+                    }
+                } else {
+                    return userInput;
+                }
+            }
+        }
+    }
 }

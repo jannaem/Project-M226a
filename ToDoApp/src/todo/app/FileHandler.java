@@ -1,9 +1,6 @@
 package todo.app;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -24,10 +21,11 @@ public class FileHandler {
      * This method gets a defined path which is taken from the user.
      * It adds the tasks from the file and saves it in todolist with
      * the before defined tasks.
+     *
      * @param path path of the local file to be read by the program
      * @return true if file was succesfully readed
      */
-    public boolean readFiles(String path) {
+    public boolean readFile(String path) {
         boolean isReaded;
         try {
             Scanner scanner = new Scanner(new File(path));
@@ -46,7 +44,7 @@ public class FileHandler {
             scanner.close();
             isReaded = true;
         } catch (FileNotFoundException e) {
-           isReaded = false;
+            isReaded = false;
         }
         return isReaded;
         //TODO output for the user, so ta the he knows it worked
@@ -63,21 +61,26 @@ public class FileHandler {
      * @return true when all task could be saved
      */
     public boolean saveToFile(String path) {
+        BufferedWriter bw = null;
         boolean isSaved;
         try {
-            PrintWriter pw = new PrintWriter(new FileOutputStream(path));
+            FileWriter fw = new FileWriter(path);
+            List<String> lines = toDoList.getTasks().entrySet().stream()
+                    .map(entry -> entry.getValue().toString())
+                    .collect(Collectors.toList());
 
-            List<String> lines = toDoList.getTasks().entrySet().stream().map(entry -> entry.getValue().toString()).collect(Collectors.toList());
-
-            lines.forEach((line) -> {
-                pw.println(line);
-            });
-            pw.close();
+            bw = new BufferedWriter(fw);
+            for (String line : lines) {
+                System.out.println(line);
+                bw.write(line);
+            }
+            bw.close();
             isSaved = true;
-        } catch (FileNotFoundException e) {
+            System.out.println("saving");
+        } catch (IOException e) {
             isSaved = false;
         }
+
         return isSaved;
-        //TODO output for the user, so ta the he knows it worked
     }
 }
