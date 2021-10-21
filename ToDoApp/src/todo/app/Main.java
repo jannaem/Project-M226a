@@ -1,12 +1,11 @@
 package todo.app;
 /**
- * To run the program, we will create a TodoList Object
+ * To run the program, we will create a TodoListManager Object
  * then we will run start on it
  */
 public class Main {
 
     public static void main(String[] args) {
-        TodoListManager manager = new TodoListManager();
-        manager.start();
+        new TodoListManager().start();
     }
 }

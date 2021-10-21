@@ -5,19 +5,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * IO gives all the output for the commandline and
+ * also gets all the input from the user.
+ *
+ * @author Janna Esteban
+ */
+
 public class IO {
-    private  final String ANSI_RESET = "\u001B[0m";
-    private  final String ANSI_BLACK = "\u001B[30m";
-    private  final String ANSI_RED = "\u001B[31m";
-    private  final String ANSI_GREEN = "\u001B[32m";
-    private  final String ANSI_BLUE = "\u001B[34m";
-    private  final String ANSI_PURPLE = "\u001B[35m";
-    private  final String ANSI_CYAN = "\u001B[36m";
+    private  final String RESET = "\u001B[0m";
+    private  final String RED = "\u001B[31m";
+    private  final String GREEN = "\u001B[32m";
+    private  final String BLUE = "\u001B[34m";
     private final Scanner scan = new Scanner(System.in);
-    private final OutputUtils output = new OutputUtils();
 
     /**
-     *This method will get you the answer of the chosen action
+     * This method will display all the actions/features
+     * that the user might need, to ease the application usage.
+     * <p>
+     * Will be used to print all valid actions
+     */
+    public void printAvailableActions(){
+        System.out.println(BLUE+"\n╭────────────────────────╮     ╭────────────────────────╮     ╭────────────────────────╮");
+        System.out.println("│1. Add a task           │     │2. Mark task as done    │     │3. Remove task          │");
+        System.out.println("╰────────────────────────╯     ╰────────────────────────╯     ╰────────────────────────╯");
+        System.out.println("╭────────────────────────╮     ╭────────────────────────╮     ╭────────────────────────╮");
+        System.out.println("│4. Edit task            │     │5. Display all tasks    │     │6. Sort tasks by date   │");
+        System.out.println("╰────────────────────────╯     ╰────────────────────────╯     ╰────────────────────────╯");
+        System.out.println("╭────────────────────────╮     ╭────────────────────────╮     ╭────────────────────────╮");
+        System.out.println("│7. sort tasks by project│     │8. save tasks to file   │     │9. read from file       │");
+        System.out.println("╰────────────────────────╯     ╰────────────────────────╯     ╰────────────────────────╯");
+        System.out.println("╭────────────────────────╮");
+        System.out.println("│10. Exit                │");
+        System.out.println("╰────────────────────────╯"+RESET);
+    }
+
+    /**
+     *This method will allow the user to chose an action
+     * from the list, checks if its a valid insertion
+     * by the user then pass it to the start() method
      * @return userInput to the start() method, for it to be used
      */
 
@@ -26,27 +52,31 @@ public class IO {
 
         while (true) {
             try {
-                System.out.print(ANSI_BLACK+"\nEnter action: "+ANSI_RESET);
+                System.out.print("\nEnter action: ");
                 int action = Integer.parseInt(scan.nextLine());
                 if (availableActions.contains(action)) {
                     return action;
                 } else {
-                    System.out.println(ANSI_RED+"Please enter a valid action from the list."+ANSI_RESET);
+                    System.out.println(RED+"Please enter a valid action from the list."+RESET);
                 }
             } catch (Exception e) {
-                output.printErrorMsg("not a number");
+                printErrorMsg("not a number");
 
             }
         }
     }
+
     /**
      * This method purpose is to act as a user guide
-     * on how adding a task should be used for the user.
+     * on how adding or updating a task or saving/reading
+     * a task from a txt file or how to mark a task as
+     * done should be used for the user. After the instruction
+     * it will get the user input by calling another method.
      * <p>
      * to ease usage and minimize crashes
      */
     public void printInstructionsTask(String instructionType) {
-        System.out.print(ANSI_PURPLE);
+        System.out.print("\nEnter 0 to RETURN\n");
         switch (instructionType){
             case "add" ->{
                 System.out.println("\nTo add a new task, please follow the instructions and press ENTER:");
@@ -60,26 +90,99 @@ public class IO {
                 System.out.println("ID here represent the ID of the task where an update will occur");
                 System.out.println("insert a (-) when an update is not needed to that specific \n");
             }
-            case "mark as done"->System.out.println("\nTo mark a task as done, enter ID and press ENTER \n");
+            case "mark as done"-> System.out.println("\nTo mark a task as done, enter ID and press ENTER \n");
 
             case "save/read file"->{
                 System.out.println("\nPlease enter path to read");
-                System.out.println("Example of a file path to read/saving from to /XXXX/XXXX/XXXX/file.txt");
+                System.out.println("Example of a file path to read/saving from to \\XXXX\\XXXX\\XXXX\\file.txt");
                 System.out.println("After reading/saving press 5 to display the tasks that were read from the file.");
             }
             case "remove"->System.out.println("\nTo remove a task, enter ID and press ENTER");
+        }
+    }
+
+    /**
+     * This method prints a nicer output in a box
+     * @param strings all the words/text that you want to print in the box
+     */
+    private static void printBox(String... strings) {
+        String line;
+        int maxBoxWidth = Integer.MIN_VALUE;
+        for (String str : strings) {
+            maxBoxWidth = Math.max(str.length(), maxBoxWidth);
+        }
+
+        String repeat = String.valueOf('─').repeat(Math.max((maxBoxWidth + 2), 0));
+
+        line  = "╭" + repeat + "╮";
+        System.out.println(line);
+
+        for (String str : strings) {
+            StringBuilder sb = new StringBuilder(str);
+            System.out.printf("│ %s │%n",sb.append( String.valueOf(' ').repeat(Math.max(maxBoxWidth - str.length(), 0))));
 
         }
-        System.out.println("\nEnter 0 to RETURN"+ANSI_RESET);
 
+        line  = "╰" + repeat + "╯";
+        System.out.println(line);
     }
+
+    /**
+     * This method display all existing tasks and how the method is executed and will later be used
+     * in the switch statement that runs the program
+     * his main purpose is to print out all existing tasks to the user
+     *
+     */
+    public void printTasks(ToDoList toDoList){
+        System.out.println("\nHere are all the tasks");
+        for (Map.Entry<Integer, Task> entry : toDoList.getTasks().entrySet()) {
+            int key = entry.getKey();
+            Task task = entry.getValue();
+            printBox("ID:" + key , "Title:"+ task.getTitle(), "Due Date:"
+                    + task.getDueDate().toString(), "Status:"+ task.getStatus(), "Project:" + task.getProjectName());
+        }
+    }
+
+    /**
+     * This method prints hits or extra information to help
+     * with the visualization
+     * @param msgType type of message you want to print
+     */
+    public void printMsg(String msgType){
+        switch(msgType){
+            case "title" -> System.out.println("T A P P - Write your own tasks \n-----------------------");
+            case "add task" ->System.out.println("Your List is empty, you have to add tasks first");
+            case "no tasks" ->  System.out.println("There are no tasks to be saved..");
+        }
+    }
+
+    /**
+     * This method tells the status of a task after
+     * you made it, so that the user now, that it worked
+     *
+     * @param msgType is the type of output you want to print
+     */
+    public void printTaskStatus(String msgType, String information){
+        System.out.print(GREEN);
+        switch(msgType){
+            case "no changes" ->  System.out.println("No change was applied...");
+            case "reading files" -> System.out.println("Tasks are being read from path "+information);
+            case "status" -> System.out.println("Task status is already done for the task with ID: "+information);
+            case "task" ->  System.out.println("Task successfully "+information);
+            case "done" ->  System.out.println("Status is set as Done for the task with ID: " + information);
+            case "removed" ->  System.out.println("Task with ID: " + information + ", was successfully removed...");
+            case "task saved" -> System.out.println("task succesfully saved into file: " + information);
+        }
+        System.out.print(RESET);
+    }
+
     /**
      * This method tells the user errors and tells him
      * what went wrong.
      * @param msgType is the type of error we got
      */
     public void printErrorMsg(String msgType){
-        System.out.print(ANSI_RED);
+        System.out.print(RED);
         switch(msgType){
             case "invalid id" ->  System.out.println("Please enter a valid ID or 0 to RETURN");
             case "id exist" -> System.out.println("A task with this ID already exists, try again ");
@@ -91,7 +194,7 @@ public class IO {
             case "invalid" ->System.out.println("Please enter a valid action from the list.");
             case "path/file not found" -> System.out.println("Path or file do not exist...");
         }
-        System.out.print(ANSI_RESET);
+        System.out.print(RESET);
     }
     /**
      * This method reads user input by using a scanner.
@@ -99,51 +202,10 @@ public class IO {
      * @return userInput user's inserted information
      */
     public String readInputTask() {
-            output.printInputInstruction("task");
-            String userInput = scan.nextLine();
-            return  userInput;
+        System.out.print("\nEnter your task: ");
+        return scan.nextLine();
     }
-    /**
-     * it will check against components completion
-     * ID existence
-     * validity of date
-     * and if the user correctly followed instructions
-     *
-     * @return userInput user's inserted information
-     */
-    public String readUpdatedInputTask(ToDoList toDoList){
-        while (true) {
-            output.printInputInstruction("task");
-            String userInput = scan.nextLine();
 
-            if (!userInput.equals(0)) {
-                String[] parts = userInput.split(",");
-                if (parts.length == 5) {
-                    boolean dateValidationRequired = true;
-                    if (parts[2].equals("-")) {
-                        dateValidationRequired = false;
-                    }
-
-                    boolean isDateValid = true;
-                    if (dateValidationRequired) {
-                        isDateValid = toDoList.isDateValid( parts[2]);
-                    }
-
-                    if (isDateValid) {
-                        if (toDoList.getTasks().get(parts[0]) != null) {
-                            return userInput;
-                        } else {
-                            output.printErrorMsg("id dont exist");
-                        }
-                    } else {
-                        output.printErrorMsg("follow instruction / return");
-                    }
-                } else {
-                    return userInput;
-                }
-            }
-        }
-    }
     /**
      * In this  method reside the implementation of
      * how this program read user's input
@@ -151,10 +213,10 @@ public class IO {
      * @return userInput user's inserted information
      */
     public String readPathInput(){
-            output.printInputInstruction("path");
-            String userInput = scan.nextLine();
+        printInstructionsTask("save/read file");
+        System.out.print("\nPath:");
 
-            return userInput;
+        return scan.nextLine();
     }
 
     /**
@@ -166,14 +228,36 @@ public class IO {
      */
     public int readTaskId(){
         while (true) {
-            output.printInputInstruction("id");
+            System.out.print("\nid:");
             try {
-                int userInput =  Integer.parseInt(scan.nextLine());
-                return userInput;
-
+                return Integer.parseInt(scan.nextLine());
             } catch (Exception err) {
-                output.printErrorMsg("valid id");
+                printErrorMsg("invalid id");
             }
         }
+    }
+
+    /**
+     *This method prints a nice output to
+     * tell the user goodbye
+     */
+    public  void printGoodBye(){
+        System.out.println("""
+                                                                                             \s
+                                                           8I   ,dPYb,                       \s
+                                                           8I   IP'`Yb                       \s
+                                                           8I   I8  8I                       \s
+                                                           8I   I8  8'                       \s
+                   ,gggg,gg    ,ggggg,    ,ggggg,    ,gggg,8I   I8 dP      gg     gg   ,ggg, \s
+                  dP"  "Y8I   dP"  "Y8gggdP"  "Y8gggdP"  "Y8I   I8dP   88ggI8     8I  i8" "8i\s
+                 i8'    ,8I  i8'    ,8I i8'    ,8I i8'    ,8I   I8P    8I  I8,   ,8I  I8, ,8I\s
+                ,d8,   ,d8I ,d8,   ,d8',d8,   ,d8',d8,   ,d8b, ,d8b,  ,8I ,d8b, ,d8I  `YbadP'\s
+                P"Y8888P"888P"Y8888P"  P"Y8888P"  P"Y8888P"`Y8 8P'"Y88P"' P""Y88P"888888P"Y888
+                       ,d8I'                                                    ,d8I'        \s
+                     ,dP'8I                                                   ,dP'8I         \s
+                    ,8"  8I                                                  ,8"  8I         \s
+                    I8   8I                                                  I8   8I         \s
+                    `8, ,8I                                                  `8, ,8I         \s
+                     `Y8P"                                                    `Y8P" \s""");
     }
 }

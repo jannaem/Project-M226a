@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * This class holds methods to save the tasks
  * inserted by the user to a local existing
- * file and to read the tasks from a
+ * file and to read the tasks from an
  * existing file.
  *
  * @author Janna Esteban Mena
@@ -51,7 +51,6 @@ public class FileHandler {
             isReaded = false;
         }
         return isReaded;
-        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
@@ -65,22 +64,16 @@ public class FileHandler {
      * @return true when all task could be saved
      */
     public boolean saveToFile(String path) {
-        BufferedWriter bw = null;
         boolean isSaved;
         try {
-            FileWriter fw = new FileWriter(path);
-            List<String> lines = toDoList.getTasks().entrySet().stream()
-                    .map(entry -> entry.getValue().toString(toDoList))
-                    .collect(Collectors.toList());
+            PrintWriter pw = new PrintWriter(new FileOutputStream(path));
 
-            bw = new BufferedWriter(fw);
-            for (String line : lines) {
-                bw.write(line);
-            }
-            bw.close();
+            List<String> lines = toDoList.getTasks().values().stream().map(task -> task.toString(toDoList)).collect(Collectors.toList());
+
+            lines.forEach(pw::println);
+            pw.close();
             isSaved = true;
-            System.out.println("saving");
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             isSaved = false;
         }
 

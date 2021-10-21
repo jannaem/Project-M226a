@@ -15,18 +15,13 @@ import java.util.*;
 public class ToDoList {
     private Map<Integer, Task> tasks = new LinkedHashMap<>();
 
-    private static int compare(Map.Entry<String, Task> task1, Map.Entry<String, Task> task2) {
-        LocalDate dueDateFirstTask = task1.getValue().getDueDate();
-        LocalDate dueDateSecondTask = task2.getValue().getDueDate();
-        int result = dueDateFirstTask.compareTo(dueDateSecondTask);
-        return result;
-    }
-
     /**
      * In this method reside the implementation of
      * how adding a task method is executed and will later be used
      * in the switch statement that runs the program.
      *
+     * <p>
+     * Task will be added to the to-do list (map)
      * @param rawTask the input task of the user
      */
     public void addTask(String rawTask) {
@@ -39,7 +34,7 @@ public class ToDoList {
 
     /**
      * In this  method reside the implementation of
-     * of how editing a task method is executed and will later be used
+     * how editing a task is executed and will later be used
      * in the switch statement that runs the program
      * <p>
      * and it will check against all components
@@ -85,11 +80,7 @@ public class ToDoList {
      * @return a true value when the task exist
      */
     public boolean checkId(int id) {
-        boolean hasId = false;
-        if (tasks.get(id) != null) {
-            hasId = true;
-        }
-        return hasId;
+        return tasks.get(id) != null;
     }
 
     /**
@@ -129,20 +120,13 @@ public class ToDoList {
      */
     public void sortByDateTasks() {
         List<Map.Entry<Integer, Task>> entries = new ArrayList<>(tasks.entrySet());
-        Collections.sort(entries, new Comparator<Map.Entry<Integer, Task>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Task> task1, Map.Entry<Integer, Task> task2) {
-                LocalDate dueDateFirstTask = task1.getValue().getDueDate();
-                LocalDate dueDateSecondTask = task2.getValue().getDueDate();
-                int result = dueDateFirstTask.compareTo(dueDateSecondTask);
-                return result;
-            }
+        entries.sort((task1, task2) -> {
+            LocalDate dueDateFirstTask = task1.getValue().getDueDate();
+            LocalDate dueDateSecondTask = task2.getValue().getDueDate();
+            return dueDateFirstTask.compareTo(dueDateSecondTask);
         });
         tasks.clear();
-        entries.forEach((entry) -> {
-            tasks.put(entry.getKey(), entry.getValue());
-        });
-        //TODO output for the user, so ta the he knows it worked
+        entries.forEach((entry) -> tasks.put(entry.getKey(), entry.getValue()));
     }
 
     /**
@@ -174,9 +158,8 @@ public class ToDoList {
      */
     public String convertDateToString(LocalDate date, String format) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        String result = date.format(formatter);
 
-        return result;
+        return date.format(formatter);
     }
 
     /**
@@ -189,8 +172,7 @@ public class ToDoList {
     public LocalDate parseDate(String format, String value) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         try {
-            LocalDate localDate = LocalDate.parse(value, formatter);
-            return localDate;
+            return LocalDate.parse(value, formatter);
         }catch(DateTimeParseException e){
             return null;
         }
@@ -205,21 +187,15 @@ public class ToDoList {
      */
     public void sortByProjectTasks() {
         List<Map.Entry<Integer, Task>> entries = new ArrayList<>(tasks.entrySet());
-        Collections.sort(entries, new Comparator<Map.Entry<Integer, Task>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Task> firstTask, Map.Entry<Integer, Task> secondTask) {
-                String firstProject = firstTask.getValue().getProjectName();
-                String secondProject = secondTask.getValue().getProjectName();
+        entries.sort((firstTask, secondTask) -> {
+            String firstProject = firstTask.getValue().getProjectName();
+            String secondProject = secondTask.getValue().getProjectName();
 
-                int result = firstProject.compareTo(secondProject);
-                return result;
-            }
+            return firstProject.compareTo(secondProject);
         });
 
         tasks.clear();
-        entries.forEach(entry -> {
-            tasks.put(entry.getKey(), entry.getValue());
-        });
+        entries.forEach(entry -> tasks.put(entry.getKey(), entry.getValue()));
         //TODO output for the user, so ta the he knows it worked
     }
 

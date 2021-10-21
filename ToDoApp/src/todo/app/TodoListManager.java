@@ -18,17 +18,11 @@ public class TodoListManager {
     private static final int READ_FROM_FILE = 9;
     private static final int EXIT = 10;
 
-    /**
-     * linkedHashMap was used to maintain insertion order
-     * applicationRunning is used as an indicator and a boolean expression
-     * in the loops and switch statements below
-     */
     public static boolean applicationRunning = true;
-    private ToDoList toDoList = new ToDoList();
-    private OutputUtils output = new OutputUtils();
-    private FileHandler fileHandler = new FileHandler(toDoList);
-    private IO io = new IO();
-    private boolean repeat = true;
+    private final ToDoList toDoList = new ToDoList();
+    private final FileHandler fileHandler = new FileHandler(toDoList);
+    private final IO io = new IO();
+    private boolean repeat;
     private int id;
     private String path;
     private String task;
@@ -41,9 +35,9 @@ public class TodoListManager {
      */
 
     public void start() {
-        output.printMsg("title");
+        io.printMsg("title");
         while (applicationRunning) {
-            output.printAvailableActions();
+            io.printAvailableActions();
             int actionNumber = io.readInputAction();
             processTask(actionNumber);
 
@@ -61,62 +55,127 @@ public class TodoListManager {
     public void processTask(int actionNumber) {
 
         if (actionNumber > 1 && actionNumber < 9 && toDoList.isToDoListEmpty())
-            output.printMsg("add task");
+            io.printMsg("add task");
         else {
+            repeat = true;
             switch (actionNumber) {
-                case ADD_TASK ->{
+                case ADD_TASK -> {
                     io.printInstructionsTask("add");
-                    task = executeAddTask();
-                    toDoList.addTask(task);
+                    task = checkTask("add");
+                    if(!task.equals("0")){
+                        toDoList.addTask(task);
+                        io.printTaskStatus("task", "added");
+                    }
+
                 }
                 case MARK_AS_DONE -> executeMarkTaskAsDone();
                 case REMOVE_TASK -> executeRemoveTask();
-                case EDIT_TASK -> executeEditTask();
-                case DISPLAY_ALL_TASKS ->{
-                    output.printMsg("all tasks");
-                    output.printTasks(toDoList);
+                case EDIT_TASK -> {
+                    io.printInstructionsTask("update");
+                    task = checkTask("edit");
+                    if (!task.equals("0")) {
+                        if(toDoList.editTask(task))
+                        io.printTaskStatus("task", "updated");
+                        else
+                            io.printTaskStatus("no changes", "");
+                    }
                 }
-                case SORT_TASKS_BY_DATE ->{
+                case DISPLAY_ALL_TASKS -> io.printTasks(toDoList);
+
+                case SORT_TASKS_BY_DATE -> {
                     toDoList.sortByDateTasks();
-                    output.printMsg("all tasks");
-                    output.printTasks(toDoList);
+                    io.printTasks(toDoList);
                 }
-                case SORT_TASKS_PROJECT ->{
+                case SORT_TASKS_PROJECT -> {
                     toDoList.sortByProjectTasks();
-                    output.printTasks(toDoList);
-                    output.printMsg("all tasks");
+                    io.printTasks(toDoList);
                 }
-                case SAVE_TASKS_TO_FILE -> saveTaskToFile();
-                case READ_FROM_FILE -> readTaskFromFile();
-                case EXIT ->{
-                    output.printGoodBye();
+                case SAVE_TASKS_TO_FILE -> executeTaskFromFile("save");
+                case READ_FROM_FILE -> executeTaskFromFile("read");
+                case EXIT -> {
+                    io.printGoodBye();
                     applicationRunning = false;
                 }
+                default -> throw new IllegalStateException("Unexpected value: " + actionNumber);
             }
         }
     }
 
     /**
-     *
-     * @return
+     * This method gets user input and checks
+     * multiple points to ensure a successful performance
+     * <p>
+     * it will check against components completion
+     * ID and task to be removed existence
+     * and if the user correctly followed instructions
      */
-    private String executeAddTask() {
+    private void executeRemoveTask() {
+        while (repeat) {
+            io.printInstructionsTask("remove");
+            id = io.readTaskId();
+            if (id != 0) {
+                if (toDoList.checkId(id)) {
+                    toDoList.deleteTask(id);
+                    io.printTaskStatus("removed", String.valueOf(id));
+                    repeat = false;
+                }
+            }else{
+                repeat = false;
+            }
+        }
+    }
+
+
+    /**
+     * In this method reside the implementation of
+     * how this program read user's input by using a scanner inside a while loop
+     * and then checking multiple points to ensure a successful performance
+     * <p>
+     * it will check against components completion
+     * ID existence
+     * validity of date
+     * and if the user correctly followed instructions
+     *
+     * @return userInput user's inserted information
+     */
+    private String checkTask(String typeOfCheck) {
         while (true) {
             String userInput = io.readInputTask();
             if (!userInput.equals("0")) {
                 String[] parts = userInput.split(",");
-                if (parts.length == 5) {
-                    if (toDoList.isDateValid(parts[2])) {
-                        if (toDoList.getTasks().get(Integer.parseInt(parts[0])) == null) {
-                            return userInput;
+                if (typeOfCheck.equals("edit")) {
+                    if (parts.length == 5) {
+                        boolean dateValidationRequired = !parts[2].equals("-");
+                        if (dateValidationRequired && !toDoList.isDateValid(parts[2])) {
+                            if (toDoList.getTasks().get(Integer.parseInt(parts[0])) != null) {
+                                return userInput;
+                            } else {
+                                io.printErrorMsg("id dont exist");
+                            }
                         } else {
-                            output.printErrorMsg("id exist");
+                            return userInput;
                         }
                     } else {
-                        output.printErrorMsg("invalid date");
+                        io.printErrorMsg("follow instruction / return");
                     }
                 } else {
-                    output.printErrorMsg("follow instruction");
+                    if (parts.length == 5 && !parts[1].equals("") && !parts[2].equals("") && !parts[3].equals("") && !parts[4].equals("")) {
+                        if (toDoList.isDateValid(parts[2])) {
+                            if(parts[0].equals("") || parts[0].equals("0")){
+                                io.printErrorMsg("invalid id");
+                            }else{
+                                if (toDoList.getTasks().get(Integer.parseInt(parts[0])) == null) {
+                                    return userInput;
+                                } else {
+                                    io.printErrorMsg("id exist");
+                                }
+                            }
+                        } else {
+                            io.printErrorMsg("invalid date");
+                        }
+                    } else {
+                        io.printErrorMsg("follow instruction");
+                    }
                 }
             } else {
                 return userInput;
@@ -124,122 +183,63 @@ public class TodoListManager {
         }
     }
 
-    /**
-     *
-     */
-    private void executeRemoveTask(){
-        while (repeat) {
-            io.printInstructionsTask("remove");
-            id = io.readTaskId();
-            if (id != 0) {
-                if (toDoList.checkId(id)) {
-                    toDoList.deleteTask(id);
-                    output.printTaskStatus("removed", String.valueOf(id));
-                    repeat = false;
-                }
-            }
-        }
-    }
 
     /**
+     * In this method  will check against components completion
+     * ID and task existence and as soon the user a valid id,
+     * it will give it to the next method so, that the task
+     * can be marked as done.
      *
-     */
-    private void executeEditTask(){
-        io.printInstructionsTask("update");
-        task = checkEdit();
-        if (!task.equals("0")) {
-            toDoList.editTask(task);
-            output.printTaskStatus("task", "updated");
-        }
-    }
-
-    /**
-     *
-     */
-    private String checkEdit() {
-        while (true) {
-            String userInput = io.readInputTask();
-            if (!userInput.equals(0)) {
-                String[] parts = userInput.split(",");
-                if (parts.length == 5) {
-                    boolean dateValidationRequired = true;
-                    if (parts[2].equals("-")) {
-                        dateValidationRequired = false;
-                    }
-
-                    boolean isDateValid = true;
-                    if (dateValidationRequired) {
-                        isDateValid = toDoList.isDateValid(parts[2]);
-                    }
-
-                    if (isDateValid) {
-                        if (toDoList.getTasks().get(Integer.parseInt(parts[0])) != null) {
-                            return userInput;
-                        } else {
-                            output.printErrorMsg("id dont exist");
-                        }
-                    } else {
-                        output.printErrorMsg("follow instruction / return");
-                    }
-                } else {
-                    return userInput;
-                }
-            }
-        }
-    }
-
-    /**
-     *
+     * <p>
+     * Checks user input if id is valid
      */
     private void executeMarkTaskAsDone() {
+        io.printInstructionsTask("mark as done");
         while (repeat) {
-            io.printInstructionsTask("mark as done");
             id = io.readTaskId();
             if (id != 0) {
                 if (toDoList.checkId(id)) {
                     repeat = false;
-                    toDoList.markTaskAsDone(id);
-                    output.printTaskStatus("done");
+                    if(!toDoList.getTasks().get(id).getStatus().equals("Done")){
+                        toDoList.markTaskAsDone(id);
+                        io.printTaskStatus("done", String.valueOf(id));
+                    }else{
+                        io.printTaskStatus("status", String.valueOf(id));
+                        repeat = false;
+                    }
                 } else {
-                    output.printErrorMsg("id dont exist");
+                    io.printErrorMsg("id dont exist");
                 }
-            }
+            }else repeat = false;
         }
     }
 
-    /**
-     *
-     */
-    private void saveTaskToFile() {
-        while (repeat) {
-            io.printInstructionsTask("save/read file");
-            path = io.readPathInput();
-            if (!path.equals("0")) {
-                if (fileHandler.saveToFile(path)) {
-                    repeat = false;
-                    output.printTaskStatus("task saved", path);
-                } else {
-                    output.printErrorMsg("path/file not found");
-                }
-            }
-        }
-    }
 
     /**
-     *
+     * In this method a given path is taken from the user
+     * which we get from IO. We start executing the readFile
+     * and inform the user if it worked otherwise the path
+     * wasn't valid, and he has to try again or enter 0.
      */
-    private void readTaskFromFile() {
+    private void executeTaskFromFile(String typeOfExecution) {
         while (repeat) {
-            io.printInstructionsTask("save/read file");
             path = io.readPathInput();
             if (!path.equals("0")) {
-                if (fileHandler.readFile(path)) {
-                    repeat = false;
-                    output.printTaskStatus("reading files");
+                if (typeOfExecution.equals("read")) {
+                    if (fileHandler.readFile(path)) {
+                        repeat = false;
+                        io.printTaskStatus("reading files", path);
+                    }
                 } else {
-                    output.printErrorMsg("path/file not found");
+                    if (fileHandler.saveToFile(path)) {
+                        repeat = false;
+                        io.printTaskStatus("task saved", path);
+                    }
                 }
-            }
+                if (repeat) {
+                    io.printErrorMsg("path/file not found");
+                }
+            }else repeat = false;
         }
     }
 }
