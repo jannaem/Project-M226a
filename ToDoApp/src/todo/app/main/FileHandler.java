@@ -1,4 +1,4 @@
-package todo.app;
+package todo.app.main;
 
 import java.io.*;
 import java.util.List;
@@ -36,7 +36,7 @@ public class FileHandler {
             while (scanner.hasNextLine()) {
                 String file = scanner.nextLine();
                 String[] parts = file.split(",");
-                Task task = Task.buildTask(parts[0], parts[1], toDoList.parseDate("dd-MM-yyyy", parts[2]),
+                Task task = Task.buildTask(parts[0], parts[1], toDoList.parseDate(parts[2]),
                         parts[3], parts[4]);
                 if (toDoList.getTasks().get(Integer.valueOf(parts[0])) != null) {
                     toDoList.getTasks().replace(Integer.valueOf(parts[0]), task);
@@ -68,7 +68,7 @@ public class FileHandler {
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(path));
 
-            List<String> lines = toDoList.getTasks().values().stream().map(task -> task.toString(toDoList)).collect(Collectors.toList());
+            List<String> lines = toDoList.getTasks().values().stream().map(task -> task.taskToString(toDoList)).collect(Collectors.toList());
 
             lines.forEach(pw::println);
             pw.close();

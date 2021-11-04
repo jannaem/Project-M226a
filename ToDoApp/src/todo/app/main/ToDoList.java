@@ -1,4 +1,4 @@
-package todo.app;
+package todo.app.main;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +14,7 @@ import java.util.*;
 
 public class ToDoList {
     private Map<Integer, Task> tasks = new LinkedHashMap<>();
+    private final String DATE_PATTERN = "dd-MM-yyyy";
 
     /**
      * In this method reside the implementation of
@@ -26,10 +27,9 @@ public class ToDoList {
      */
     public void addTask(String rawTask) {
         String[] parts = rawTask.split(",");
-        Task task = Task.buildTask(parts[0], parts[1], parseDate("dd-MM-yyyy", parts[2]),
+        Task task = Task.buildTask(parts[0], parts[1], parseDate(parts[2]),
                 parts[3], parts[4]);
         tasks.put(task.getId(), task);
-        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
@@ -55,7 +55,7 @@ public class ToDoList {
         }
 
         if (!parts[2].equals("-")) {
-            LocalDate date = parseDate("dd-MM-yyyy", parts[2]);
+            LocalDate date = parseDate(parts[2]);
             if(date != null)
             tasks.get(id).setDueDate(date);
             isTaskEdited = true;
@@ -72,16 +72,6 @@ public class ToDoList {
         return isTaskEdited;
     }
 
-    /**
-     * This method tells us if an id exist
-     *
-     * @param id is the id of the task you want
-     *           to prove his existence
-     * @return a true value when the task exist
-     */
-    public boolean checkId(int id) {
-        return tasks.get(id) != null;
-    }
 
     /**
      * In this  method reside the implementation of how removing
@@ -138,7 +128,7 @@ public class ToDoList {
      * @return result result as a boolean expression
      */
     public boolean isDateValid(String value) {
-        DateTimeFormatter formattings = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formattings = DateTimeFormatter.ofPattern(DATE_PATTERN);
         try{
             LocalDate localDate = LocalDate.parse(value, formattings);
             localDate.format(formattings);
@@ -153,11 +143,10 @@ public class ToDoList {
      * to be added and returned to the console
      *
      * @param date   due date
-     * @param format date format pattern
      * @return date as a string
      */
-    public String convertDateToString(LocalDate date, String format) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+    public String convertDateToString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
         return date.format(formatter);
     }
@@ -165,12 +154,11 @@ public class ToDoList {
     /**
      * parseDate parses a string representation of the given date
      *
-     * @param format date format pattern
      * @param value  value that equals the component in the task format
      * @return localDate  parsed of the given String date
      */
-    public LocalDate parseDate(String format, String value) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+    public LocalDate parseDate(String value) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
         try {
             return LocalDate.parse(value, formatter);
         }catch(DateTimeParseException e){

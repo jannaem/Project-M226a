@@ -1,4 +1,4 @@
-package todo.app;
+package todo.app.main;
 
 import java.util.Arrays;
 import java.util.List;
@@ -166,12 +166,12 @@ public class IO {
         System.out.print(GREEN);
         switch(msgType){
             case "no changes" ->  System.out.println("No change was applied...");
-            case "reading files" -> System.out.println("Tasks are being read from path "+information);
+            case "read" -> System.out.println("Tasks are being read from path "+information);
             case "status" -> System.out.println("Task status is already done for the task with ID: "+information);
             case "task" ->  System.out.println("Task successfully "+information);
             case "done" ->  System.out.println("Status is set as Done for the task with ID: " + information);
             case "removed" ->  System.out.println("Task with ID: " + information + ", was successfully removed...");
-            case "task saved" -> System.out.println("task succesfully saved into file: " + information);
+            case "save" -> System.out.println("task succesfully saved into file: " + information);
         }
         System.out.print(RESET);
     }

@@ -1,4 +1,4 @@
-package todo.app;
+package todo.app.main;
 
 import java.time.LocalDate;
 /**
@@ -13,6 +13,7 @@ public class Task {
     private LocalDate dueDate;
     private String status;
     private String projectName;
+
 
     /**
      * @return task's ID
@@ -117,8 +118,8 @@ public class Task {
      * @return the string representation of different objects
      */
 
-    public String toString(ToDoList toDoList) {
-        return id + "," + title + "," + toDoList.convertDateToString(dueDate, "dd-MM-yyyy") + "," + status + "," + projectName;
+    public String taskToString(ToDoList toDoList) {
+        return id + "," + title + "," + toDoList.convertDateToString(dueDate) + "," + status + "," + projectName;
     }
 
 
