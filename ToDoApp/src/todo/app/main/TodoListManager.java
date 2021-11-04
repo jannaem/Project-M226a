@@ -179,7 +179,7 @@ public class TodoListManager {
                     io.printTaskStatus("status", String.valueOf(id));
                 }
             } else if (id == 0) repeat = false;
-            else io.printErrorMsg("id dont exist");
+            else io.printErrorMsg("id doen't exist");
         }
     }
 

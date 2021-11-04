@@ -57,7 +57,7 @@ public class IO {
                 if (availableActions.contains(action)) {
                     return action;
                 } else {
-                    System.out.println(RED+"Please enter a valid action from the list."+RESET);
+                    printrrorMsg("invalid");
                 }
             } catch (Exception e) {
                 printErrorMsg("not a number");
@@ -147,7 +147,6 @@ public class IO {
         switch(msgType){
             case "title" -> System.out.println("T A P P - Write your own tasks \n-----------------------");
             case "add task" ->System.out.println("Your List is empty, you have to add tasks first");
-            case "no tasks" ->  System.out.println("There are no tasks to be saved..");
         }
     }
 
@@ -182,9 +181,8 @@ public class IO {
         switch(msgType){
             case "invalid id" ->  System.out.println("Please enter a valid ID or 0 to RETURN");
             case "id exist" -> System.out.println("A task with this ID already exists, try again ");
-            case "id dont exist" -> System.out.println("ID doesn't exist, try again");
+            case "id doesn't exist" -> System.out.println("ID doesn't exist, try again");
             case "invalid date" -> System.out.println("The date entered is invalid, try again ");
-            case "follow instruction" ->  System.out.println("Please follow instructions, try again");
             case "follow instruction / return" ->  System.out.println("Please follow instructions or enter 0 to RETURN");
             case "not a number" ->  System.out.println("Action must be a number...");
             case "invalid" ->System.out.println("Please enter a valid action from the list.");
