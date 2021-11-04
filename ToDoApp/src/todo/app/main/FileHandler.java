@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 
 public class FileHandler {
-    private ToDoList toDoList;
+    private final ToDoList toDoList;
 
     public FileHandler(ToDoList toDoList) {
         this.toDoList = toDoList;
@@ -23,11 +23,11 @@ public class FileHandler {
 
     /**
      * This method gets a defined path which is taken from the user.
-     * It adds the tasks from the file and saves it in todolist with
+     * It adds the tasks from the file and saves them in the todolist (map tasks) with
      * the before defined tasks.
      *
      * @param path path of the local file to be read by the program
-     * @return true if file was succesfully readed
+     * @return true if file was successfully read
      */
     public boolean readFile(String path) {
         boolean isReaded;
@@ -54,13 +54,10 @@ public class FileHandler {
     }
 
     /**
-     * In this method reside the implementation of
-     * how a given path is taken from the user
-     * logged into to save information of tasks inserted by the user
-     * <p>
-     * it used a PrintWriter and print out a message to confirm success or failure
+     * This method saves each task on a new line in the defined
+     * file.
      *
-     * @param path path to the local files for tasks to be saved in
+     * @param path directory of the file
      * @return true when all task could be saved
      */
     public boolean saveToFile(String path) {

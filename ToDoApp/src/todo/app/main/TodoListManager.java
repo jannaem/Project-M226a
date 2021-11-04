@@ -3,8 +3,8 @@ package todo.app.main;
 import java.util.Scanner;
 
 /**
- * ToDolISTManager is the main class where all classes and
- * features are connected and implemented.
+ * ToDolISTManager is the class which connects all
+ * classes and features.
  *
  * @author Janna Esteban
  */
@@ -19,7 +19,7 @@ public class TodoListManager {
     private static final int SAVE_TASKS_TO_FILE = 8;
     private static final int READ_FROM_FILE = 9;
     private static final int EXIT = 10;
-    private static final int GET_BACK_TO_MENU = 0;
+    private static final String GET_BACK_TO_MENU = "0";
 
     public static boolean applicationRunning = true;
     private final ToDoList toDoList = new ToDoList();
@@ -31,9 +31,8 @@ public class TodoListManager {
 
 
     /**
-     * This method start the application by running an infinite loop
-     * to make sure the app keeps running as long as we are using it
-     * and using the switch statement implemented in another method
+     * This method starts the application by running an infinite loop
+     * to make sure, that the program keeps running as long as we are using it.
      */
 
     public void start() {
@@ -48,8 +47,9 @@ public class TodoListManager {
 
     /**
      * This method runs a switch statement which
-     * uses user inputs to process different tasks
-     * in different ways
+     * uses the user input to either edit, create,
+     * delete, mark a task as done, sort by date/project
+     * and show all tasks or save/read tasks to/from a file.
      *
      * @param actionNumber the action that the user will insert
      */
@@ -65,23 +65,20 @@ public class TodoListManager {
             switch (actionNumber) {
                 case ADD_TASK -> {
                     io.printInstructionsTask("add");
-                    task = getNewTask();
-                    if (!task.equals("0")) {
+                    task = checkNewTask();
+                    if (!task.equals(GET_BACK_TO_MENU)) {
                         toDoList.addTask(task);
                         io.printTaskStatus("task", "added");
                     }
-
                 }
                 case MARK_AS_DONE -> markTaskAsDone();
-                case REMOVE_TASK -> executeRemoveTask();
+                case REMOVE_TASK -> removeTask();
                 case EDIT_TASK -> {
                     io.printInstructionsTask("update");
-                    task = getEditedTask();
-                    if (!task.equals("0")) {
-                        if (toDoList.editTask(task))
-                            io.printTaskStatus("task", "updated");
-                        else
-                            io.printTaskStatus("no changes", "");
+                    task = checkEditedTask();
+                    if (!task.equals(GET_BACK_TO_MENU)) {
+                        if (toDoList.editTask(task)) io.printTaskStatus("task", "updated");
+                        else io.printTaskStatus("no changes", "");
                     }
                 }
                 case DISPLAY_ALL_TASKS -> io.printTasks(toDoList);
@@ -94,8 +91,8 @@ public class TodoListManager {
                     toDoList.sortByProjectTasks();
                     io.printTasks(toDoList);
                 }
-                case SAVE_TASKS_TO_FILE -> checkPathInput("save");
-                case READ_FROM_FILE -> checkPathInput("read");
+                case SAVE_TASKS_TO_FILE -> saveOrReadTaskFromFile("save");
+                case READ_FROM_FILE -> saveOrReadTaskFromFile("read");
                 case EXIT -> {
                     io.printGoodBye();
                     applicationRunning = false;
@@ -106,18 +103,15 @@ public class TodoListManager {
     }
 
     /**
-     * This method gets user input and checks
-     * multiple points to ensure a successful performance
-     * <p>
-     * it will check against components completion
-     * ID and task to be removed existence
-     * and if the user correctly followed instructions
+     * This method will check for the existence for
+     * this ID. If the task with this ID exists,
+     * it will be deleted.
      */
-    private void executeRemoveTask() {
+    private void removeTask() {
         while (repeat) {
             io.printInstructionsTask("remove");
             id = io.readTaskId();
-            if (id != 0 && validation.isIdAvailable(id)) {
+            if (validation.isIdAvailable(id)) {
                 toDoList.deleteTask(id);
                 io.printTaskStatus("removed", String.valueOf(id));
                 repeat = false;
@@ -126,19 +120,19 @@ public class TodoListManager {
     }
 
     /**
-     * In this method will check against components completion
-     * ID existence
-     * validity of date
-     * and if the user correctly followed instructions
+     * This method will check
+     * for if all task information is given,
+     * if ID exists already, if it has a valid date
+     * and if the user correctly followed instructions.
      *
      * @return userInput user's inserted information
      */
-    private String getNewTask() {
+    private String checkNewTask() {
         while (true) {
             String userInput = io.readInputTask();
             String[] parts = userInput.split(",");
             if (!userInput.equals("0") && validation.isTaskComplete(parts)) {
-                if (parts[0].equals("") || Integer.parseInt(parts[0]) == GET_BACK_TO_MENU) io.printErrorMsg("invalid id");
+                if (parts[0].equals("") || parts[0].equals(GET_BACK_TO_MENU)) io.printErrorMsg("invalid id");
                 else if (!validation.isIdAvailable(Integer.parseInt(parts[0]))) io.printErrorMsg("id exist");
                 else if (!validation.isDateValid(parts[2])) io.printErrorMsg("invalid date");
                 else return userInput;
@@ -148,49 +142,29 @@ public class TodoListManager {
     }
 
     /**
-     * In this method will get the user input,
+     * This method will get the user input,
      * that will be validated with the class Validate
-     * and ask for input again if it returns false.
+     * and ask for input until the validation returns true.
      *
      * @return userInput user's inserted information
      */
-    private String getEditedTask() {
+    private String checkEditedTask() {
         while (true) {
             String userInput = io.readInputTask();
-            if (!userInput.equals("0")) {
+            if (!userInput.equals(GET_BACK_TO_MENU)) {
                 String[] parts = userInput.split(",");
-                if (validation.isEditedTaskValid(parts))
-                    return userInput;
+                if (validation.isEditedTaskValid(parts)) return userInput;
             } else return userInput;
             io.printErrorMsg("follow instruction / return");
         }
     }
 
     /**
-     * This method checks if a task
-     *
-     * @param parts all the subjects value of the tasks
-     * @return true when the string task, was correctly
-     */
-    private boolean isRawTaskValid(String[] parts) {
-        if (parts.length == 5) {
-            boolean dateValidationRequired = !parts[2].equals("-") && !toDoList.isDateValid(parts[2]);
-            if (dateValidationRequired) {
-                if (toDoList.getTasks().get(Integer.parseInt(parts[0])) != null) return true;
-                else io.printErrorMsg("id dont exist");
-            } else return true;
-        } else io.printErrorMsg("follow instruction / return");
-        return false;
-    }
-
-    /**
-     * In this method  will check against components completion
-     * ID and task existence and as soon the user enter a valid id,
-     * it will give it to the next method so, that the task
-     * can be marked as done.
-     *
-     * <p>
-     * Checks user input if id is valid
+     * This method  will check if ID exists, if the
+     * task with the ID exists, it checks if its already
+     * marked as done if not it will be marked. The user will be
+     * informed if the ID doesn't exist or the task has been marked
+     * or is already marked.
      */
     private void markTaskAsDone() {
         io.printInstructionsTask("mark as done");
@@ -212,16 +186,22 @@ public class TodoListManager {
 
     /**
      * In this method a given path is taken from the user
-     * which we get from IO. We check if the path is valid
-     * and inform the user if it worked otherwise the path
-     * wasn't valid, and he has to try again or enter 0.
+     * which we get from the Class IO. We check if the path is valid
+     * and inform the user if it worked. As long as the path is invalid,
+     * the user has to enter a new path or can return to the menu.
+     * If the path is valid, the tasks will be read or save
+     * from/to a file it depends on the type of execution.
      *
      * @param typeOfExecution it tells us if you want to read or save the tasks
      */
-    private void checkPathInput(String typeOfExecution) {
+    private void saveOrReadTaskFromFile(String typeOfExecution) {
         while (repeat) {
             String path = io.readPathInput();
-            if (!path.equals("0") && executePath(typeOfExecution, path)) {
+            if (!path.equals(GET_BACK_TO_MENU) && validation.isPathValid(path)) {
+                switch (typeOfExecution) {
+                    case "read" -> fileHandler.readFile(path);
+                    case "save" -> fileHandler.saveToFile(path);
+                }
                 io.printTaskStatus(typeOfExecution, path);
                 repeat = false;
             } else if (path.equals("0")) repeat = false;
@@ -229,24 +209,4 @@ public class TodoListManager {
         }
     }
 
-    /**
-     * We read or save task to or from a file it depends on the type of execution.
-     * After that we will get a return value, which tells us if it could
-     * save/read all tasks.
-     *
-     * @param typeOfExecution it tells us if you want to read or save the tasks
-     * @param path            is the input from user, which tells us where the file is
-     * @return true value when the tasks could be safe/read.
-     */
-    private boolean executePath(String typeOfExecution, String path) {
-        switch (typeOfExecution) {
-            case "read" -> {
-                return (fileHandler.readFile(path));
-            }
-            case "save" -> {
-                return (fileHandler.saveToFile(path));
-            }
-        }
-        return false;
-    }
 }

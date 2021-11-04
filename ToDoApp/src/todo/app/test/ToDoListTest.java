@@ -38,18 +38,6 @@ class ToDoListTest {
     }
 
     @Test
-    @DisplayName("Check if id 2 exists")
-    void checkId() {
-        assertTrue(toDoList.checkId(2));
-    }
-
-    @Test
-    @DisplayName("Id 4 doesn't exist")
-    void checkNonExistenceId() {
-        assertFalse(toDoList.checkId(4));
-    }
-
-    @Test
     @DisplayName("Task 3 deleted ")
     void deleteTask() {
         toDoList.deleteTask(2);
@@ -83,25 +71,6 @@ class ToDoListTest {
             ++index;
         }
         assertArrayEquals(dateSortExpected, dateSort);
-    }
-
-    @Test
-    @DisplayName("Invalid string of date")
-    public void isDateinValid() {
-        String date = "c";
-
-        assertFalse(toDoList.isDateValid( date));
-
-
-    }
-    @Test
-    @DisplayName("Is date a Valid string")
-    public void isDateValid() {
-        String date = "12-12-2021";
-
-        assertTrue(toDoList.isDateValid( date));
-
-
     }
 
     @Test

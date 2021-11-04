@@ -21,7 +21,7 @@ public class IO {
 
     /**
      * This method will display all the actions/features
-     * that the user might need, to ease the application usage.
+     * that the user might need.
      * <p>
      * Will be used to print all valid actions
      */
@@ -41,9 +41,9 @@ public class IO {
     }
 
     /**
-     *This method will allow the user to chose an action
-     * from the list, checks if its a valid insertion
-     * by the user then pass it to the start() method
+     * This method will allow the user to choose an action
+     * from the list, checks if it's a valid input and returns the input,
+     * when it's valid.
      * @return userInput to the start() method, for it to be used
      */
 
@@ -67,13 +67,11 @@ public class IO {
     }
 
     /**
-     * This method purpose is to act as a user guide
-     * on how adding or updating a task or saving/reading
-     * a task from a txt file or how to mark a task as
-     * done should be used for the user. After the instruction
-     * it will get the user input by calling another method.
-     * <p>
-     * to ease usage and minimize crashes
+     * This method's purpose is to act as a user guide
+     * on how adding, updating a task,
+     * saving/reading a task from a txt file
+     * or how to mark a task as done
+     * should be used.
      */
     public void printInstructionsTask(String instructionType) {
         System.out.print("\nEnter 0 to RETURN\n");
@@ -102,7 +100,7 @@ public class IO {
     }
 
     /**
-     * This method prints a nicer output in a box
+     * This method prints the output in a box.
      * @param strings all the words/text that you want to print in the box
      */
     private static void printBox(String... strings) {
@@ -128,10 +126,7 @@ public class IO {
     }
 
     /**
-     * This method display all existing tasks and how the method is executed and will later be used
-     * in the switch statement that runs the program
-     * his main purpose is to print out all existing tasks to the user
-     *
+     * This method displays all existing tasks.
      */
     public void printTasks(ToDoList toDoList){
         System.out.println("\nHere are all the tasks");
@@ -144,7 +139,7 @@ public class IO {
     }
 
     /**
-     * This method prints hits or extra information to help
+     * This method prints hints or extra information to help
      * with the visualization
      * @param msgType type of message you want to print
      */
@@ -157,8 +152,9 @@ public class IO {
     }
 
     /**
-     * This method tells the status of a task after
-     * you made it, so that the user now, that it worked
+     * This method tells the status of a task after a task
+     * has been edited, created, deleted, marked as done,
+     * sorted by date/project or saved/read tasks to/from a file.
      *
      * @param msgType is the type of output you want to print
      */
@@ -177,7 +173,7 @@ public class IO {
     }
 
     /**
-     * This method tells the user errors and tells him
+     * This method display error messages and tells
      * what went wrong.
      * @param msgType is the type of error we got
      */
@@ -196,6 +192,7 @@ public class IO {
         }
         System.out.print(RESET);
     }
+
     /**
      * This method reads user input by using a scanner.
      *
@@ -207,10 +204,10 @@ public class IO {
     }
 
     /**
-     * In this  method reside the implementation of
-     * how this program read user's input
+     * In this  method gets the path, after
+     * printing the instructions.
      *
-     * @return userInput user's inserted information
+     * @return user's inserted information
      */
     public String readPathInput(){
         printInstructionsTask("save/read file");
@@ -220,11 +217,9 @@ public class IO {
     }
 
     /**
-     * This method will check against components completion
-     * ID and task to be removed existence
-     * and if the user correctly followed instructions
+     * This method checks if the ID is a number(int).
      *
-     * @return userInput user's inserted information
+     * @return  user's inserted information
      */
     public int readTaskId(){
         while (true) {
@@ -238,8 +233,8 @@ public class IO {
     }
 
     /**
-     *This method prints a nice output to
-     * tell the user goodbye
+     * This method prints a nice output to
+     * tell the user goodbye:)
      */
     public  void printGoodBye(){
         System.out.println("""

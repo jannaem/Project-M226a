@@ -1,5 +1,7 @@
 package todo.app.main;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -14,32 +16,31 @@ public class Validation {
     }
 
     /**
-     * This method tells us if an id exist
+     * This method tells us if an id exists
      *
-     * @param id is the id of the task you want
-     *           to prove his existence
-     * @return a true value when id doesn't exist
+     * @param id is the id of the task you want to check
+     * @return true when id doesn't exist
      */
     public boolean isIdAvailable(int id) {
         return tasks.get(id) == null && id != 0;
     }
 
     /**
-     * This method checks if a task has data.
+     * This method checks if a task has all data needed.
      *
-     * @param parts all the subjects value of the tasks
-     * @return true when the string task isn't empty
+     * @param parts the user input split into parts of the task
+     * @return true when the all parts aren't empty
      */
     public boolean isTaskComplete(String[] parts) {
         return (parts.length == 5 && !parts[1].equals("") && !parts[2].equals("") && !parts[3].equals("") && !parts[4].equals(""));
     }
 
     /**
-     *  This method confirms the validity of the inserted date
+     * This method confirms the validity of the inserted date
      * by creating Local Date and parsing it then formatting it
-     * to the pattern inserted in the method parameter
+     * to the pattern - DATE_PATTERN
      *
-     * @return result result as a boolean expression
+     * @return true when the date is valid
      */
     public boolean isDateValid(String date) {
         DateTimeFormatter formattings = DateTimeFormatter.ofPattern(DATE_PATTERN);
@@ -57,11 +58,11 @@ public class Validation {
      * has the criteria we need to edit it:
      * Task exist -> id exist
      * Date is valid
-     * All data is filed:
-     * ID,  Title,Due Date (format: dd-mm-yyyy),Status,Project Name
+     * All data is filled:
+     * ID, Title, Due Date (format: dd-mm-yyyy), Status, Project Name
      *
-     * @param parts data of the task
-     * @return
+     * @param parts the user input split into parts of the task
+     * @return true when all criteria is met
      */
     public boolean isEditedTaskValid(String[] parts){
        if(isTaskComplete(parts)){
@@ -72,5 +73,20 @@ public class Validation {
            return !isIdAvailable(Integer.parseInt(parts[0])) && isTaskComplete(parts);
        }
        return false;
+    }
+
+    /**
+     * This method tells us if a path is valid.
+     * @param path is the directory of the file
+     * @return true when the path is valid
+     */
+    public  boolean isPathValid(String path) {
+        try {
+            Paths.get(path);
+        } catch (InvalidPathException ex) {
+            return false;
+        }
+
+        return true;
     }
 }

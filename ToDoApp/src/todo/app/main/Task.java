@@ -113,7 +113,7 @@ public class Task {
     }
 
     /**
-     * toString is used to represent all task's components as strings
+     * toString is used to represent all task's components as a string
      *
      * @return the string representation of different objects
      */

@@ -13,16 +13,13 @@ import java.util.*;
  */
 
 public class ToDoList {
-    private Map<Integer, Task> tasks = new LinkedHashMap<>();
+    private final Map<Integer, Task> tasks = new LinkedHashMap<>();
     private final String DATE_PATTERN = "dd-MM-yyyy";
 
     /**
-     * In this method reside the implementation of
-     * how adding a task method is executed and will later be used
-     * in the switch statement that runs the program.
-     *
-     * <p>
-     * Task will be added to the to-do list (map)
+     * In this method the task object is added to
+     * the map tasks, after the raw task is split into
+     * the needed parts, which are used to create a task object.
      * @param rawTask the input task of the user
      */
     public void addTask(String rawTask) {
@@ -33,12 +30,9 @@ public class ToDoList {
     }
 
     /**
-     * In this  method reside the implementation of
-     * how editing a task is executed and will later be used
-     * in the switch statement that runs the program
-     * <p>
-     * and it will check against all components
-     * to see if a change is applied or not
+     * This method checks which parts need to be edited, edits parts that need
+     * updating and sets the boolean isTaskEdited to true, after the rawTask
+     * was split into the parts defined by the ",".
      *
      * @param rawTask the task that should be updated/edited
      * @return a true value when a change was applied
@@ -74,11 +68,7 @@ public class ToDoList {
 
 
     /**
-     * In this  method reside the implementation of how removing
-     * an existing task is done and how the method is executed and will later be used
-     * in the switch statement that runs the program
-     * <p>
-     * its main purpose is to remove the wanted task.
+     *This method removes the wanted task.
      *
      * @param id is the id of the task that should be deleted
      */
@@ -88,25 +78,19 @@ public class ToDoList {
     }
 
     /**
-     * In this method reside the implementation of
-     * how marking a task as done method is executed and will later be used
-     * in the switch statement that runs the program
-     * <p>
-     * its main purpose is to set a task's status with a given ID to Done
+     * This method sets a task's status with a given ID to Done.
      *
      * @param id is the id of the task that you want to mark as done
      */
     public void markTaskAsDone(int id) {
         tasks.get(id).setStatus("Done");
-        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
      * In this method resides the implementation
-     * to compare our tasks and sort them according to their date value
+     * that compares our tasks and sorts them according to their date value
      * <p>
-     * then our map will be cleared, sorted data will be inserted
-     * and a message confirming the completion of task to the user will be printed
+     * then our map will be cleared and sorted data will be inserted
      */
     public void sortByDateTasks() {
         List<Map.Entry<Integer, Task>> entries = new ArrayList<>(tasks.entrySet());
@@ -120,27 +104,8 @@ public class ToDoList {
     }
 
     /**
-     * isDateValid confirms the validity of the inserted date
-     * by creating Local Date and parsing it then formatting it
-     * to the pattern inserted in the method parameter
-     *
-     * @param value  value that equals the component in the task format
-     * @return result result as a boolean expression
-     */
-    public boolean isDateValid(String value) {
-        DateTimeFormatter formattings = DateTimeFormatter.ofPattern(DATE_PATTERN);
-        try{
-            LocalDate localDate = LocalDate.parse(value, formattings);
-            localDate.format(formattings);
-            return true;
-        }catch (DateTimeParseException e){
-            return false;
-        }
-    }
-
-    /**
-     * This method return a string format of the LocalDate date
-     * to be added and returned to the console
+     * This method returns a string format of the LocalDate date
+     * to be added and returned.
      *
      * @param date   due date
      * @return date as a string
@@ -152,7 +117,7 @@ public class ToDoList {
     }
 
     /**
-     * parseDate parses a string representation of the given date
+     * parseDate parses a string into correct date format representation of the given date
      *
      * @param value  value that equals the component in the task format
      * @return localDate  parsed of the given String date
@@ -168,10 +133,9 @@ public class ToDoList {
 
     /**
      * In this method resides the implementation
-     * to compare our tasks and sort them according to their project name value
+     * that compares our tasks and sorts them according to their project name value
      * <p>
-     * then our map will be cleared, sorted data will be inserted
-     * and a message confirming the completion of task to the user will be printed
+     * then our map will be cleared and sorted data will be inserted
      */
     public void sortByProjectTasks() {
         List<Map.Entry<Integer, Task>> entries = new ArrayList<>(tasks.entrySet());
@@ -184,7 +148,6 @@ public class ToDoList {
 
         tasks.clear();
         entries.forEach(entry -> tasks.put(entry.getKey(), entry.getValue()));
-        //TODO output for the user, so ta the he knows it worked
     }
 
     /**
@@ -198,11 +161,9 @@ public class ToDoList {
     }
 
     /**
-     * This method gives us access to the to-do
-     * list
+     * This method gives us access to all tasks and returns them.
      *
-     * @return tasks , which is the whole to-do list
-     * whitch all taks
+     * @return all tasks, that appear in the to-do list
      */
     public Map<Integer, Task> getTasks() {
         return tasks;
