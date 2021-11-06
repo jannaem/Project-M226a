@@ -57,7 +57,7 @@ public class IO {
                 if (availableActions.contains(action)) {
                     return action;
                 } else {
-                    printrrorMsg("invalid");
+                    printErrorMsg("invalid");
                 }
             } catch (Exception e) {
                 printErrorMsg("not a number");
@@ -128,9 +128,9 @@ public class IO {
     /**
      * This method displays all existing tasks.
      */
-    public void printTasks(ToDoList toDoList){
+    public void printTasks(Map<Integer, Task> tasks){
         System.out.println("\nHere are all the tasks");
-        for (Map.Entry<Integer, Task> entry : toDoList.getTasks().entrySet()) {
+        for (Map.Entry<Integer, Task> entry : tasks.entrySet()) {
             int key = entry.getKey();
             Task task = entry.getValue();
             printBox("ID:" + key , "Title:"+ task.getTitle(), "Due Date:"

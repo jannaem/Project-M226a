@@ -81,15 +81,15 @@ public class TodoListManager {
                         else io.printTaskStatus("no changes", "");
                     }
                 }
-                case DISPLAY_ALL_TASKS -> io.printTasks(toDoList);
+                case DISPLAY_ALL_TASKS -> io.printTasks(toDoList.getTasks());
 
                 case SORT_TASKS_BY_DATE -> {
                     toDoList.sortByDateTasks();
-                    io.printTasks(toDoList);
+                    io.printTasks(toDoList.getTasks());
                 }
                 case SORT_TASKS_PROJECT -> {
                     toDoList.sortByProjectTasks();
-                    io.printTasks(toDoList);
+                    io.printTasks(toDoList.getTasks());
                 }
                 case SAVE_TASKS_TO_FILE -> saveOrReadTaskFromFile("save");
                 case READ_FROM_FILE -> saveOrReadTaskFromFile("read");
