@@ -19,24 +19,24 @@ class FileHandlerTest {
     @Test
     @DisplayName("Save tasks to a txt file")
     void saveToFile() {
-        Assertions.assertTrue(fileHandler.saveToFile("C:\\Users\\Arbeit\\OneDrive - TBZ\\Dokumente\\GitHub\\Project-M226a\\ToDoApp\\tasks.txt"));
+        Assertions.assertTrue(fileHandler.saveToFile("tasks.txt"));
     }
     @Test
     @DisplayName("Save tasks to a folder directory")
     void saveToPath() {
-        Assertions.assertFalse(fileHandler.saveToFile("C:\\Users\\Arbeit\\OneDrive - TBZ\\Dokumente\\GitHub\\Project-M226a\\ToDoApp"));
+        Assertions.assertFalse(fileHandler.saveToFile("ToDoApp"));
     }
 
     @Test
     @DisplayName("Read file from txt file")
     void readFromFile() {
-        Assertions.assertTrue(fileHandler.readFile("C:\\Users\\Arbeit\\OneDrive - TBZ\\Dokumente\\GitHub\\Project-M226a\\ToDoApp\\tasks.txt"));
+        Assertions.assertTrue(fileHandler.readFile("tasks.txt"));
     }
 
     @Test
     @DisplayName("Read from a folder directory")
     void readFromPath() {
-        Assertions.assertFalse(fileHandler.readFile("C:\\Users\\Arbeit\\OneDrive - TBZ\\Dokumente\\GitHub\\Project-M226a\\ToDoApp"));
+        Assertions.assertFalse(fileHandler.readFile("ToDoApp"));
     }
 
 }

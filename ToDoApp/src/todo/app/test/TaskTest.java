@@ -40,13 +40,10 @@ class TaskTest {
     @Test
     @DisplayName("Get id 1")
     public void getId() {
-        task.setId(1);
-
         int expected = 1;
         assertSame(expected, task.getId());
 
     }
-
     @Test
     @DisplayName("Get title testing")
     public void getTitle() {
