@@ -21,11 +21,6 @@ class FileHandlerTest {
     void saveToFile() {
         Assertions.assertTrue(fileHandler.saveToFile("tasks.txt"));
     }
-    @Test
-    @DisplayName("Save tasks to a folder directory")
-    void saveToPath() {
-        Assertions.assertFalse(fileHandler.saveToFile("ToDoApp"));
-    }
 
     @Test
     @DisplayName("Read file from txt file")

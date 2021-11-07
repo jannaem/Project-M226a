@@ -34,8 +34,8 @@ public class FileHandler {
         try {
             Scanner scanner = new Scanner(new File(path));
             while (scanner.hasNextLine()) {
-                String file = scanner.nextLine();
-                String[] parts = file.split(",");
+                String line = scanner.nextLine();
+                String[] parts = line.split(",");
                 Task task = Task.buildTask(parts[0], parts[1], toDoList.parseDate(parts[2]),
                         parts[3], parts[4]);
                 if (toDoList.getTasks().get(Integer.valueOf(parts[0])) != null) {
@@ -50,6 +50,7 @@ public class FileHandler {
         } catch (FileNotFoundException e) {
             isReaded = false;
         }
+
         return isReaded;
     }
 
@@ -63,14 +64,16 @@ public class FileHandler {
     public boolean saveToFile(String path) {
         boolean isSaved;
         try {
-            PrintWriter pw = new PrintWriter(new FileOutputStream(path));
+            FileWriter fw = new FileWriter(path, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter(bw);
 
             List<String> lines = toDoList.getTasks().values().stream().map(task -> task.taskToString(toDoList)).collect(Collectors.toList());
 
             lines.forEach(pw::println);
             pw.close();
             isSaved = true;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e ) {
             isSaved = false;
         }
 
